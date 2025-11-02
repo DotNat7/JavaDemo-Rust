@@ -5,16 +5,13 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.chart.LineChart;
-import javafx.scene.chart.NumberAxis;
-import javafx.scene.chart.XYChart;
-import javafx.scene.control.Label;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.stage.Stage;
 
 import javafx.event.ActionEvent;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.Period;
 
 
 public class SceneController {
@@ -35,43 +32,78 @@ public class SceneController {
     private RadioButton femaleRadio;
 
     @FXML
-    private Label bmiResult;
-
-    @FXML
-    private Label pSex;
-
-    @FXML
-    private Label pName;
-
-    @FXML
     private TextField nameField;
 
     @FXML
     private TextField surnameField;
 
-    public void setPatientName(String fullName) {
-        if (pName != null) {
-            pName.setText(fullName);
-        }
+    @FXML
+    private DatePicker birthDatePicker;
+
+    private int calculateAge(LocalDate birthDate) {
+        if (birthDate == null) return 0;
+        return Period.between(birthDate, LocalDate.now()).getYears();
     }
 
     @FXML
     public void savePatient(ActionEvent event) throws IOException {
         String name = nameField.getText();
         String surname = surnameField.getText();
+        String heightText = heightField.getText();
+        String weightText = weightField.getText();
+        String gender = maleRadio.isSelected() ? "chlapec" : femaleRadio.isSelected() ? "dívka" : "";
 
-        if (name.isEmpty() || surname.isEmpty()) {
-            pName.setText("❌ Zadej prosím jméno i příjmení!");
+        StringBuilder errors = new StringBuilder();
+
+        if (name.isEmpty()) errors.append("• Zadejte křestní jméno.\n");
+        if (surname.isEmpty()) errors.append("• Zadejte příjmení.\n");
+        if (gender.isEmpty()) errors.append("• Vyberte pohlaví.\n");
+
+        LocalDate birthDate = birthDatePicker.getValue();
+        if (birthDate == null) {
+            errors.append("• Zadejte datum narození.\n");
+        }
+
+        int age = 0;
+        if (birthDate != null) {
+            age = calculateAge(birthDate);
+        }
+
+        double height = 0, weight = 0;
+        try {
+            height = Double.parseDouble(heightText);
+            if (height < 30 || height > 200) throw new NumberFormatException();
+        } catch (NumberFormatException e) {
+            errors.append("• Zadejte výšku v rozmezí 30-200 cm\n");
+        }
+
+        try {
+            weight = Double.parseDouble(weightText);
+            if (weight < 1.5 || weight > 200) throw new NumberFormatException();
+        } catch (NumberFormatException e) {
+            errors.append("• Zadejte váhu v rozmezí 1.5-200 kg\n");
+        }
+
+        if (errors.length() > 0) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Chybné údaje");
+            alert.setHeaderText("Zkontrolujte zadané hodnoty:");
+            alert.setContentText(errors.toString());
+            alert.showAndWait();
             return;
         }
+
+        double heightValue = Double.parseDouble(heightText);
+        double weightValue = Double.parseDouble(weightText);
+        double bmi = weightValue / Math.pow(heightValue / 100, 2);
+
 
         // vytvoření loaderu
         FXMLLoader loader = new FXMLLoader(getClass().getResource("Scene3.fxml"));
         Parent root = loader.load();
-
-        // získej controller pro Scene3
-        SceneController scene3Controller = loader.getController();
-        scene3Controller.setPatientName(name + " " + surname);
+        GraphController controller = loader.getController();
+        controller.addPatientPoint(age, bmi);
+        controller.setPatientName(name + " " + surname);
 
         // přepni scénu
         stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
@@ -81,43 +113,37 @@ public class SceneController {
     }
 
     @FXML
-    private LineChart<Number, Number> bmiChart;
+    public void switchToScene1(ActionEvent event) throws IOException {
+        Parent root = FXMLLoader.load(getClass().getResource("Scene1.fxml"));
+        stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+        scene = new Scene(root);
+        stage.setScene(scene);
+        stage.show();
+    }
 
     @FXML
-    private NumberAxis xAxis;
+    public void switchToScene2(ActionEvent event) throws IOException {
+        Parent root = FXMLLoader.load(getClass().getResource("Scene2.fxml"));
+        stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+        scene = new Scene(root);
+        stage.setScene(scene);
+        stage.show();
+    }
+}
 
-    @FXML
-    private NumberAxis yAxis;
 
-    public void getSex(ActionEvent event) throws IOException {
+
+    /*public void getSex(ActionEvent event) throws IOException {
         if (maleRadio.isSelected()) {
             pSex.setText(maleRadio.getText());
         } else if(femaleRadio.isSelected()) {
             pSex.setText(femaleRadio.getText());
         }
-    }
+    }*/
 
-    @FXML
-    public void initialize() {
-        if (bmiChart == null) return;
-        bmiChart.setCreateSymbols(false); // hladké křivky bez bodů
-        addPercentileSeries("P3", new double[][]{{2,14.3},{5,13.8},{10,14.0},{15,17.0},{18,18.2}});
-        addPercentileSeries("P50", new double[][]{{2,16.0},{5,15.7},{10,16.5},{15,20.9},{18,22.6}});
-        addPercentileSeries("P97", new double[][]{{2,19.2},{5,18.9},{10,20.8},{15,26.0},{18,28.0}});
-    }
-
-    private void addPercentileSeries(String name, double[][] data) {
-        XYChart.Series<Number, Number> series = new XYChart.Series<>();
-        series.setName(name);
-        for (double[] point : data) {
-            series.getData().add(new XYChart.Data<>(point[0], point[1]));
-        }
-        bmiChart.getData().add(series);
-    }
-
-    @FXML
+    /*@FXML
     public void calculateBMI() {
-        try {
+
             double height = Double.parseDouble(heightField.getText());
             double weight = Double.parseDouble(weightField.getText());
 
@@ -146,27 +172,16 @@ public class SceneController {
             }
 
             bmiResult.setText(String.format("Pohlaví: %s | BMI: %.1f (%s)", gender, bmi, category));
+    }*/
 
-        } catch (NumberFormatException e) {
-            bmiResult.setText("❌ Zadej platná čísla pro výšku a váhu!");
-        }
-    }
+/*@FXML
+private Label bmiResult;
 
-    @FXML
-    public void switchToScene1(ActionEvent event) throws IOException {
-        Parent root = FXMLLoader.load(getClass().getResource("Scene1.fxml"));
-        stage = (Stage)((Node)event.getSource()).getScene().getWindow();
-        scene = new Scene(root);
-        stage.setScene(scene);
-        stage.show();
-    }
+@FXML
+private Label pSex;
 
-    @FXML
-    public void switchToScene2(ActionEvent event) throws IOException {
-        Parent root = FXMLLoader.load(getClass().getResource("Scene2.fxml"));
-        stage = (Stage)((Node)event.getSource()).getScene().getWindow();
-        scene = new Scene(root);
-        stage.setScene(scene);
-        stage.show();
-    }
-}
+@FXML
+private Label age;
+
+@FXML
+private Label pName;*/

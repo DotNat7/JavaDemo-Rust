@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="474.0" prefWidth="588.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.demo.SceneController">
+<AnchorPane prefHeight="372.0" prefWidth="588.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.demo.SceneController">
    <children>
       <Button layoutX="528.0" layoutY="19.0" mnemonicParsing="false" onAction="#switchToScene1" text="Zpět" />
       <Label layoutX="22.0" layoutY="20.0" prefHeight="23.0" prefWidth="119.0" text="Nový proband">
@@ -46,26 +46,18 @@
             <Font size="12.0" />
          </font>
       </Label>
-      <RadioButton fx:id="maleRadio" layoutX="105.0" layoutY="157.0" mnemonicParsing="false" onAction="#getSex" text="chlapec">
+      <RadioButton fx:id="maleRadio" layoutX="105.0" layoutY="157.0" mnemonicParsing="false" text="chlapec">
          <toggleGroup>
             <ToggleGroup fx:id="sex" />
          </toggleGroup>
       </RadioButton>
-      <RadioButton fx:id="femaleRadio" layoutX="185.0" layoutY="157.0" mnemonicParsing="false" onAction="#getSex" text="dívka" toggleGroup="$sex" />
-      <Label fx:id="bmiResult" layoutX="201.0" layoutY="362.0" text="Hodnota:" />
-      <Button fx:id="calculateBMI" layoutX="103.0" layoutY="357.0" mnemonicParsing="false" onAction="#calculateBMI" text="Count BMI" />
+      <RadioButton fx:id="femaleRadio" layoutX="185.0" layoutY="157.0" mnemonicParsing="false" text="dívka" toggleGroup="$sex" />
       <Label layoutX="321.0" layoutY="142.0" text="Datum narození">
          <font>
             <Font size="12.0" />
          </font>
       </Label>
-      <DatePicker layoutX="321.0" layoutY="160.0" prefHeight="26.0" prefWidth="160.0" />
-      <Label layoutX="110.0" layoutY="406.0" text="Informace o pacientovi:" />
-      <Label fx:id="pName" layoutX="24.0" layoutY="429.0" text="Jméno" />
-      <Label layoutX="190.0" layoutY="429.0" text="Věk" />
-      <Label fx:id="pSex" layoutX="308.0" layoutY="429.0" text="Pohlaví" />
-      <Label layoutX="378.0" layoutY="429.0" text="Výška" />
-      <Label layoutX="445.0" layoutY="429.0" text="Váha" />
+      <DatePicker fx:id="birthDatePicker" layoutX="321.0" layoutY="160.0" prefHeight="26.0" prefWidth="160.0" />
       <Button fx:id="buttonSave" layoutX="411.0" layoutY="324.0" mnemonicParsing="false" onAction="#savePatient" text="Uložit info" />
 
       <Label layoutX="324.0" layoutY="268.0" text="Komentář">
@@ -79,7 +71,6 @@
             <Font size="12.0" />
          </font>
       </Label>
-      <DatePicker layoutX="106.0" layoutY="287.0" prefHeight="26.0" prefWidth="160.0" />
-      <Button layoutX="411.0" layoutY="367.0" mnemonicParsing="false" onAction="#savePatient" text="Jméno" />
+      <DatePicker fx:id="measureDate" layoutX="106.0" layoutY="287.0" prefHeight="26.0" prefWidth="160.0" />
    </children>
 </AnchorPane>

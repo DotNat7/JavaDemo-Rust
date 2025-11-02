@@ -15,7 +15,7 @@ public class Main extends Application {
     /*Stage window;
     Scene scene1, scene2;*/
 
-    public static void main(String[] args) {
+    static void main(String[] args) {
         launch(args);
     }
 
@@ -25,7 +25,7 @@ public class Main extends Application {
             Parent root = FXMLLoader.load(getClass().getResource("Scene1.fxml"));
             Scene scene = new Scene(root);
             stage.setScene(scene);
-            stage.setTitle("DJA");
+            stage.setTitle("Test architektury");
             stage.show();
         } catch (Exception e) {
             e.printStackTrace();
