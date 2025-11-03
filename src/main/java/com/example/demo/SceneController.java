@@ -97,13 +97,14 @@ public class SceneController {
         double weightValue = Double.parseDouble(weightText);
         double bmi = weightValue / Math.pow(heightValue / 100, 2);
 
-
         // vytvoření loaderu
         FXMLLoader loader = new FXMLLoader(getClass().getResource("Scene3.fxml"));
         Parent root = loader.load();
         GraphController controller = loader.getController();
         controller.addPatientPoint(age, bmi);
         controller.setPatientName(name + " " + surname);
+        controller.setGender(gender);
+        controller.showCurvesForGender();
 
         // přepni scénu
         stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
