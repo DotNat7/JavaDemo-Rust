@@ -46,7 +46,6 @@ public class GraphController {
         }
 
     public void loadMaleBMI() {
-        //chlapci
         addPercentileSeries("P3", new double[][]{{0.0, 11.4},{0.2, 12.4},{0.4, 13.4},{0.6, 14.0}, {0.8, 14.4}, {1.0, 14.5}, {1.2, 14.5}, {1.4, 14.3}, {1.6, 14.2}, {1.8, 14.0}, {2.0, 13.9}, {2.2, 13.7}, {2.4, 13.7}, {2.6, 13.6}, {2.8, 13.5}, {3.0, 13.5}, {3.5, 13.4}, {4.0, 13.3}, {4.5, 13.2}, {5.0, 13.1}, {5.5, 13.0}, {6.0, 13.1}, {7.0, 13.1}, {8.0, 13.2}, {9.0, 13.5}, {10.0, 13.7}, {11.0, 14.1}, {12.0, 14.5}, {13.0, 15.0}, {14.0, 15.7}, {15.0, 16.4}, {16.0, 17.1}, {17.0, 17.6}, {18.0, 18.2},});
         addPercentileSeries("P10", new double[][]{{0.0, 12.2}, {0.2, 13.2}, {0.4, 14.2}, {0.6, 14.9}, {0.8, 15.3}, {1.0, 15.4}, {1.2, 15.3}, {1.4, 15.1}, {1.6, 15.0}, {1.8, 14.8}, {2.0, 14.6}, {2.2, 14.5}, {2.4, 14.4}, {2.6, 14.3}, {2.8, 14.2}, {3.0, 14.2}, {3.5, 14.0}, {4.0, 13.9}, {4.5, 13.8}, {5.0, 13.8}, {5.5, 13.7}, {6.0, 13.7}, {7.0, 13.8}, {8.0, 13.9}, {9.0, 14.2}, {10.0, 14.5}, {11.0, 14.9}, {12.0, 15.4}, {13.0, 15.9}, {14.0, 16.6}, {15.0, 17.3}, {16.0, 18.0}, {17.0, 18.6}, {18.0, 19.1}});
         addPercentileSeries("P25", new double[][]{{0.0, 13.0}, {0.2, 14.1}, {0.4, 15.1}, {0.6, 15.8}, {0.8, 16.2}, {1.0, 16.3}, {1.2, 16.2}, {1.4, 16.0}, {1.6, 15.8}, {1.8, 15.6}, {2.0, 15.5}, {2.2, 15.3}, {2.4, 15.2}, {2.6, 15.1}, {2.8, 15.0}, {3.0, 14.9}, {3.5, 14.8}, {4.0, 14.7}, {4.5, 14.6}, {5.0, 14.5}, {5.5, 14.4}, {6.0, 14.5}, {7.0, 14.6}, {8.0, 14.8}, {9.0, 15.1}, {10.0, 15.5}, {11.0, 15.9}, {12.0, 16.4}, {13.0, 17.0}, {14.0, 17.7}, {15.0, 18.4}, {16.0, 19.1}, {17.0, 19.7}, {18.0, 20.3}});
@@ -67,7 +66,6 @@ public class GraphController {
     }
 
     public void showCurvesForGender() {
-        // smaže předchozí křivky
         if (gender == null) return;
 
         if (gender.equalsIgnoreCase("M") || gender.equalsIgnoreCase("chlapec")) {
@@ -89,7 +87,15 @@ public class GraphController {
     public void addPatientPoint(int age, double bmi) {
         XYChart.Series<Number, Number> patientSeries = new XYChart.Series<>();
         patientSeries.setName("Pacient");
-        patientSeries.getData().add(new XYChart.Data<>(age, bmi));
+
+        XYChart.Data<Number, Number> dataPoint = new XYChart.Data<>(age, bmi);
+
+        // vytvoříme větší kruh jako symbol
+        javafx.scene.shape.Circle circle = new javafx.scene.shape.Circle(6);
+        circle.setStyle("-fx-fill: red; -fx-stroke: black; -fx-stroke-width: 1;");
+        dataPoint.setNode(circle);
+
+        patientSeries.getData().add(dataPoint);
         bmiChart.getData().add(patientSeries);
     }
 
