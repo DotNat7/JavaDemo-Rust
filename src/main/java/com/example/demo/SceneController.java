@@ -1,5 +1,7 @@
 package com.example.demo;
 
+import com.example.demo.model.ProbandH2;
+import com.example.demo.model.ProbandService;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -15,6 +17,10 @@ import java.time.Period;
 
 
 public class SceneController {
+    private static final String DB_PATH = "./secure_db";
+    private static final String DB_USER = "sa";
+    private static final String ENCRYPTION_KEY = "heslo123";
+
     private Stage stage;
     private Scene scene;
     private Parent root;
@@ -40,6 +46,9 @@ public class SceneController {
     @FXML
     private DatePicker birthDatePicker;
 
+    @FXML
+    private TextField commentField;
+
     private int calculateAge(LocalDate birthDate) {
         if (birthDate == null) return 0;
         return Period.between(birthDate, LocalDate.now()).getYears();
@@ -47,11 +56,21 @@ public class SceneController {
 
     @FXML
     public void savePatient(ActionEvent event) throws IOException {
+        ProbandService probandService;
+        try {
+            ProbandH2 probandH2 = new ProbandH2(DB_PATH, DB_USER, ENCRYPTION_KEY);
+            probandService = new ProbandService(probandH2);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return;
+        }
+
         String name = nameField.getText();
         String surname = surnameField.getText();
         String heightText = heightField.getText();
         String weightText = weightField.getText();
         String gender = maleRadio.isSelected() ? "chlapec" : femaleRadio.isSelected() ? "dívka" : "";
+        String comment = commentField.getText();
 
         StringBuilder errors = new StringBuilder();
 
@@ -105,6 +124,22 @@ public class SceneController {
         controller.setPatientName(name + " " + surname);
         controller.setGender(gender);
         controller.showCurvesForGender();
+
+        try {
+            probandService.addProband(
+                    name,
+                    surname,
+                    maleRadio.isSelected(),
+                    birthDate,
+                    height,
+                    weight,
+                    LocalDate.now(),
+                    comment
+            );
+            probandService.close();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
 
         // přepni scénu
         stage = (Stage) ((Node) event.getSource()).getScene().getWindow();

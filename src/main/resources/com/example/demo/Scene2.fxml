@@ -65,7 +65,7 @@
             <Font size="12.0" />
          </font>
       </Label>
-      <TextField layoutX="323.0" layoutY="287.0" prefHeight="26.0" prefWidth="163.0" />
+      <TextField fx:id="commentField" layoutX="323.0" layoutY="287.0" prefHeight="26.0" prefWidth="163.0" />
       <Label layoutX="106.0" layoutY="269.0" text="Datum měření">
          <font>
             <Font size="12.0" />
