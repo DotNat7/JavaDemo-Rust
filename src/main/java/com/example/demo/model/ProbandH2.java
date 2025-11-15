@@ -53,7 +53,7 @@ public class ProbandH2 {
         ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM probands ORDER BY id");
 
         while (rs.next()) {
-            probands.add(new Proband(
+            Proband newProband = new Proband(
                     rs.getString("name"),
                     rs.getString("surname"),
                     rs.getBoolean("isMale"),
@@ -61,7 +61,9 @@ public class ProbandH2 {
                     rs.getDouble("height"),
                     rs.getDouble("weight"),
                     rs.getObject("measurementDate", LocalDate.class),
-                    rs.getString("comment")));
+                    rs.getString("comment"));
+            newProband.setId(rs.getInt("id"));
+            probands.add(newProband);
         }
 
         rs.close();

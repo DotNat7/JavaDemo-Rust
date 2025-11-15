@@ -3,6 +3,7 @@ package com.example.demo.model;
 import java.time.LocalDate;
 
 public class Proband {
+    private int id;
     private String name;
     private String surname;
     private boolean isMale;
@@ -21,6 +22,10 @@ public class Proband {
         this.weight = weight;
         this.measurementDate = measurementDate;
         this.comment = comment;
+    }
+
+    public int getId() {
+        return id;
     }
 
     public String getName() {
@@ -53,6 +58,10 @@ public class Proband {
 
     public String getComment() {
         return comment;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public void setName(String name) {
