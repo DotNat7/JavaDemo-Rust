@@ -26,4 +26,6 @@ public class ProbandService {
     public void close() throws Exception {
         probandH2.close();
     }
+
+//    pridat hlasku, kdyz databazi nejde nacist
 }

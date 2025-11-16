@@ -5,14 +5,14 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-
 <AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.demo.SceneController">
    <children>
-      <Label layoutX="191.0" layoutY="146.0" text="Landing page">
+      <Label layoutX="163.0" layoutY="131.0" text="Landing page">
          <font>
-            <Font size="36.0" />
+            <Font size="48.0" />
          </font>
       </Label>
-      <Button layoutX="243.0" layoutY="207.0" mnemonicParsing="false" onAction="#switchToScene2" text="Nový proband" />
+      <Button layoutX="189.0" layoutY="206.0" mnemonicParsing="false" onAction="#switchToScene2" text="Nový proband" />
+      <Button layoutX="290.0" layoutY="206.0" mnemonicParsing="false" onAction="#switchToPatientList" text="Hledat probanda" />
    </children>
 </AnchorPane>

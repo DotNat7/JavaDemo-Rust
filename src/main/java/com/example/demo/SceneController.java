@@ -165,59 +165,13 @@ public class SceneController {
         stage.setScene(scene);
         stage.show();
     }
+
+    @FXML
+    public void switchToPatientList(ActionEvent event) throws IOException {
+        Parent root = FXMLLoader.load(getClass().getResource("PatientsList.fxml"));
+        stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+        scene = new Scene(root);
+        stage.setScene(scene);
+        stage.show();
+    }
 }
-
-
-
-    /*public void getSex(ActionEvent event) throws IOException {
-        if (maleRadio.isSelected()) {
-            pSex.setText(maleRadio.getText());
-        } else if(femaleRadio.isSelected()) {
-            pSex.setText(femaleRadio.getText());
-        }
-    }*/
-
-    /*@FXML
-    public void calculateBMI() {
-
-            double height = Double.parseDouble(heightField.getText());
-            double weight = Double.parseDouble(weightField.getText());
-
-            // výpočet BMI
-            double bmi = weight / Math.pow(height / 100, 2); // výška v metrech
-
-            String gender;
-            if (maleRadio.isSelected()) {
-                gender = "chlapec";
-            } else if (femaleRadio.isSelected()) {
-                gender = "dívka";
-            } else {
-                gender = "neuvedeno";
-            }
-
-            // slovní hodnocení podle BMI
-            String category;
-            if (bmi < 18.5) {
-                category = "Podváha";
-            } else if (bmi < 25) {
-                category = "Normální váha";
-            } else if (bmi < 30) {
-                category = "Nadváha";
-            } else {
-                category = "Obezita";
-            }
-
-            bmiResult.setText(String.format("Pohlaví: %s | BMI: %.1f (%s)", gender, bmi, category));
-    }*/
-
-/*@FXML
-private Label bmiResult;
-
-@FXML
-private Label pSex;
-
-@FXML
-private Label age;
-
-@FXML
-private Label pName;*/
