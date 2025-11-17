@@ -49,22 +49,32 @@ public class SceneController {
     @FXML
     private TextField commentField;
 
+    private ProbandH2 probandH2;
+    private ProbandService probandService;
+
+    @FXML
+    public void initialize() {
+        connectToDatabase();
+    }
+
     private int calculateAge(LocalDate birthDate) {
         if (birthDate == null) return 0;
         return Period.between(birthDate, LocalDate.now()).getYears();
     }
 
+    private void connectToDatabase() {
+        if (probandH2 == null) {
+            try {
+                probandH2 = new ProbandH2(DB_PATH, DB_USER, ENCRYPTION_KEY);
+                probandService = new ProbandService(probandH2);
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+        }
+    }
+
     @FXML
     public void savePatient(ActionEvent event) throws IOException {
-        ProbandService probandService;
-        try {
-            ProbandH2 probandH2 = new ProbandH2(DB_PATH, DB_USER, ENCRYPTION_KEY);
-            probandService = new ProbandService(probandH2);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return;
-        }
-
         String name = nameField.getText();
         String surname = surnameField.getText();
         String heightText = heightField.getText();
