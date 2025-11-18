@@ -1,25 +1,21 @@
 package com.example.demo;
 
-import com.example.demo.model.Proband;
-import com.example.demo.model.ProbandH2;
+import com.example.demo.model.DatabaseManager;
 import com.example.demo.model.ProbandService;
-import javafx.collections.FXCollections;
+import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 
-import javafx.event.ActionEvent;
 import java.io.IOException;
-import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.Period;
-import java.util.List;
-
+import java.util.Optional;
 
 public class SceneController {
     private static final String DB_PATH = "./secure_db";
@@ -53,6 +49,23 @@ public class SceneController {
 
     @FXML
     private TextField commentField;
+
+    private ProbandService probandService;
+
+    @FXML
+    public void initialize() {
+        connectToDatabase();
+    }
+
+    private void connectToDatabase() {
+        try {
+            DatabaseManager dbManager = DatabaseManager.getInstance();
+            probandService = dbManager.getProbandService();
+        } catch (IOException e) {
+            System.err.println("Failed to connect to database: " + e.getMessage());
+            showDatabaseErrorDialog(e.getMessage());
+        }
+    }
 
     private int calculateAge(LocalDate birthDate) {
         if (birthDate == null) return 0;
@@ -251,6 +264,43 @@ public class SceneController {
 
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    private void showDatabaseErrorDialog(String errorMessage) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Chyba databáze");
+        alert.setHeaderText("Nelze se připojit k databázi");
+        alert.setContentText(errorMessage + "\n\nCo chcete udělat?");
+
+        ButtonType refreshButton = new ButtonType("Obnovit");
+        ButtonType quitButton = new ButtonType("Ukončit aplikaci");
+
+        alert.getButtonTypes().setAll(refreshButton, quitButton);
+
+        Optional<ButtonType> result = alert.showAndWait();
+
+        if (result.isPresent()) {
+            if (result.get() == refreshButton) {
+                DatabaseManager.resetInstance();
+
+                try {
+                    DatabaseManager dbManager = DatabaseManager.getInstance();
+                    probandService = dbManager.getProbandService();
+
+                    Alert successAlert = new Alert(Alert.AlertType.INFORMATION);
+                    successAlert.setTitle("Úspěch");
+                    successAlert.setHeaderText("Připojení obnoveno");
+                    successAlert.setContentText("Databáze je nyní připojena.");
+                    successAlert.showAndWait();
+
+                } catch (IOException e) {
+                    System.err.println("Reconnection failed: " + e.getMessage());
+                    showDatabaseErrorDialog(e.getMessage());
+                }
+            } else if (result.get() == quitButton) {
+                Platform.exit();
+            }
         }
     }
 }

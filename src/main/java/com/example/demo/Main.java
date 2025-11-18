@@ -1,5 +1,6 @@
 package com.example.demo;
 
+import com.example.demo.model.DatabaseManager;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -11,6 +12,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public class Main extends Application {
+
 
     static void main(String[] args) {
         launch(args);
@@ -26,6 +28,16 @@ public class Main extends Application {
             stage.show();
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void stop() {
+        try {
+            DatabaseManager dbManager = DatabaseManager.getInstance();
+            dbManager.close();
+        } catch (Exception e) {
+            System.err.println("Error during shutdown: " + e.getMessage());
         }
     }
 }
