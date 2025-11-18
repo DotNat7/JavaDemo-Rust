@@ -1,19 +1,24 @@
 package com.example.demo;
 
+import com.example.demo.model.Proband;
 import com.example.demo.model.ProbandH2;
 import com.example.demo.model.ProbandService;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 
 import javafx.event.ActionEvent;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.Period;
+import java.util.List;
 
 
 public class SceneController {
@@ -120,7 +125,7 @@ public class SceneController {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("Scene3.fxml"));
         Parent root = loader.load();
         GraphController controller = loader.getController();
-        controller.addPatientPoint(age, bmi);
+        controller.addPatientPoint(age, bmi, name);
         controller.setPatientName(name + " " + surname);
         controller.setGender(gender);
         controller.showCurvesForGender();
@@ -173,5 +178,79 @@ public class SceneController {
         scene = new Scene(root);
         stage.setScene(scene);
         stage.show();
+    }
+
+    @FXML
+    private TableView<Proband> patientsTable;
+
+    @FXML
+    private TableColumn<Proband, String> nameColumn;
+
+    @FXML
+    private TableColumn<Proband, String> surnameColumn;
+
+    @FXML
+    private TableColumn<Proband, LocalDate> birthColumn;
+
+    @FXML
+    private TableColumn<Proband, String> noteColumn;
+
+    @FXML
+    public void initialize() {
+        if (patientsTable != null) {
+            nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
+            surnameColumn.setCellValueFactory(new PropertyValueFactory<>("surname"));
+            birthColumn.setCellValueFactory(new PropertyValueFactory<>("birthDate"));
+            noteColumn.setCellValueFactory(new PropertyValueFactory<>("comment"));
+
+            loadPatients();   // <-- IMPORTANT
+        }
+    }
+
+    private void loadPatients() {
+        try {
+            ProbandH2 probandH2 = new ProbandH2(DB_PATH, DB_USER, ENCRYPTION_KEY);
+            ProbandService probandService = new ProbandService(probandH2);
+
+            List<Proband> list = probandService.getAllProbands();
+            patientsTable.setItems(FXCollections.observableArrayList(list));
+
+            probandService.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void showGraphForSelected(ActionEvent event) {
+        Proband selected = patientsTable.getSelectionModel().getSelectedItem();
+
+        if (selected == null) {
+            System.out.println("No patient selected");
+            return;
+        }
+
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("Scene3.fxml"));
+            Parent root = loader.load();
+
+            GraphController controller = loader.getController();
+            controller.setPatientName(selected.getName() + " " + selected.getSurname());
+            controller.setGender(selected.isMale() ? "chlapec" : "dívka");
+            controller.showCurvesForGender();
+
+            int age = Period.between(selected.getBirthDate(), LocalDate.now()).getYears();
+            double bmi = selected.getWeight() / Math.pow(selected.getHeight() / 100.0, 2);
+
+            controller.addPatientPoint(age, bmi, selected.getName() + selected.getSurname());
+
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.show();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

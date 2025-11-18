@@ -7,18 +7,19 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.demo.SceneController">
+<AnchorPane prefHeight="400.0" prefWidth="608.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.demo.SceneController">
    <children>
       <Button layoutX="14.0" layoutY="14.0" mnemonicParsing="false" onAction="#switchToScene1" text="Home" />
-      <TableView fx:id="patientsTable" layoutX="28.0" layoutY="87.0" prefHeight="200.0" prefWidth="545.0">
+      <TableView fx:id="patientsTable" layoutX="19.0" layoutY="89.0" prefHeight="200.0" prefWidth="564.0">
         <columns>
-          <TableColumn fx:id="nameColumn" prefWidth="166.0" text="Jméno" />
-          <TableColumn fx:id="birthColumn" prefWidth="125.0" text="Datum narození" />
-            <TableColumn fx:id="noteColumn" prefWidth="252.0" text="Poznámka" />
+          <TableColumn fx:id="nameColumn" prefWidth="98.36745643615723" text="Jméno" />
+            <TableColumn fx:id="surnameColumn" prefWidth="103.91116333007812" text="Příjmení" />
+          <TableColumn fx:id="birthColumn" prefWidth="124.62078857421875" text="Datum narození" />
+            <TableColumn fx:id="noteColumn" prefWidth="234.87921142578125" text="Poznámka" />
         </columns>
       </TableView>
-      <Text layoutX="28.0" layoutY="75.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Pacienti" wrappingWidth="51.5">
+       <Button layoutX="19" layoutY="300" text="Zobrazit graf" onAction="#showGraphForSelected"/>
+      <Text layoutX="17.0" layoutY="76.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Pacienti" wrappingWidth="51.5">
          <font>
             <Font name="System Bold" size="15.0" />
          </font>

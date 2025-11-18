@@ -84,7 +84,7 @@ public class GraphController {
         bmiChart.getData().add(series);
     }
 
-    public void addPatientPoint(int age, double bmi) {
+    public void addPatientPoint(int age, double bmi, String fullName) {
         XYChart.Series<Number, Number> patientSeries = new XYChart.Series<>();
         patientSeries.setName("Pacient");
 
