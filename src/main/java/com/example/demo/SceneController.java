@@ -1,8 +1,11 @@
 package com.example.demo;
 
 import com.example.demo.model.DatabaseManager;
+import com.example.demo.model.Proband;
+import com.example.demo.model.ProbandH2;
 import com.example.demo.model.ProbandService;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -10,11 +13,13 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.Period;
+import java.util.List;
 import java.util.Optional;
 
 public class SceneController {
@@ -51,11 +56,6 @@ public class SceneController {
     private TextField commentField;
 
     private ProbandService probandService;
-
-    @FXML
-    public void initialize() {
-        connectToDatabase();
-    }
 
     private void connectToDatabase() {
         try {
@@ -210,6 +210,8 @@ public class SceneController {
 
     @FXML
     public void initialize() {
+        connectToDatabase();
+
         if (patientsTable != null) {
             nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
             surnameColumn.setCellValueFactory(new PropertyValueFactory<>("surname"));
