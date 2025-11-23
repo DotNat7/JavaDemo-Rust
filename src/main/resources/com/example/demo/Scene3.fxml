@@ -16,7 +16,7 @@
         </yAxis>
     </LineChart>
    <Label layoutX="29.0" layoutY="22.0" text="Proband: " />
-   <Button layoutX="532.0" layoutY="18.0" mnemonicParsing="false" onAction="#switchToScene2" text="Zpět" />
+   <Button layoutX="532.0" layoutY="18.0" mnemonicParsing="false" onAction="#switchToScene1" text="Zpět" />
    <Label fx:id="patientLabel" layoutX="87.0" layoutY="22.0" text=" " />
 
 </AnchorPane>

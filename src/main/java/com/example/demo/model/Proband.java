@@ -1,17 +1,45 @@
 package com.example.demo.model;
 
+import jakarta.persistence.*;
+
 import java.time.LocalDate;
 
+@Entity
+@Table(name = "probands")
 public class Proband {
-    private int id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false)
     private String name;
+
+    @Column(nullable = false)
     private String surname;
+
+    @Column(nullable = false)
     private boolean isMale;
+
+    @Column(nullable = false)
     private LocalDate birthDate;
+
+    @Column(nullable = false)
     private double height;
+
+    @Column(nullable = false)
     private double weight;
+
+    @Column(nullable = false)
     private LocalDate measurementDate;
+
+    @Column
     private String comment;
+
+    @Version
+    private Long version;
+
+    public Proband() {
+    }
 
     public Proband(String name, String surname, boolean isMale, LocalDate birthDate, double height, double weight, LocalDate measurementDate, String comment) {
         this.name = name;
@@ -24,7 +52,7 @@ public class Proband {
         this.comment = comment;
     }
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
@@ -60,7 +88,11 @@ public class Proband {
         return comment;
     }
 
-    public void setId(int id) {
+    public Long getVersion() {
+        return version;
+    }
+
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -94,5 +126,9 @@ public class Proband {
 
     public void setComment(String comment) {
         this.comment = comment;
+    }
+
+    public void setVersion(Long version) {
+        this.version = version;
     }
 }

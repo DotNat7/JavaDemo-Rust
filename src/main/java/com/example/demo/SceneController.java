@@ -1,10 +1,7 @@
 package com.example.demo;
 
-import com.example.demo.model.DatabaseManager;
 import com.example.demo.model.Proband;
-import com.example.demo.model.ProbandH2;
-import com.example.demo.model.ProbandService;
-import javafx.application.Platform;
+import com.example.demo.model.ProbandDAO;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -20,13 +17,8 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.List;
-import java.util.Optional;
 
 public class SceneController {
-    private static final String DB_PATH = "./secure_db";
-    private static final String DB_USER = "sa";
-    private static final String ENCRYPTION_KEY = "heslo123";
-
     private Stage stage;
     private Scene scene;
     private Parent root;
@@ -55,17 +47,7 @@ public class SceneController {
     @FXML
     private TextField commentField;
 
-    private ProbandService probandService;
-
-    private void connectToDatabase() {
-        try {
-            DatabaseManager dbManager = DatabaseManager.getInstance();
-            probandService = dbManager.getProbandService();
-        } catch (IOException e) {
-            System.err.println("Failed to connect to database: " + e.getMessage());
-            showDatabaseErrorDialog(e.getMessage());
-        }
-    }
+    private ProbandDAO probandDAO = new ProbandDAO();
 
     private int calculateAge(LocalDate birthDate) {
         if (birthDate == null) return 0;
@@ -74,15 +56,6 @@ public class SceneController {
 
     @FXML
     public void savePatient(ActionEvent event) throws IOException {
-        ProbandService probandService;
-        try {
-            ProbandH2 probandH2 = new ProbandH2(DB_PATH, DB_USER, ENCRYPTION_KEY);
-            probandService = new ProbandService(probandH2);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return;
-        }
-
         String name = nameField.getText();
         String surname = surnameField.getText();
         String heightText = heightField.getText();
@@ -144,17 +117,7 @@ public class SceneController {
         controller.showCurvesForGender();
 
         try {
-            probandService.addProband(
-                    name,
-                    surname,
-                    maleRadio.isSelected(),
-                    birthDate,
-                    height,
-                    weight,
-                    LocalDate.now(),
-                    comment
-            );
-            probandService.close();
+            probandDAO.save(new Proband(name, surname, maleRadio.isSelected(), birthDate, height, weight, LocalDate.now(), comment));
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
@@ -169,7 +132,7 @@ public class SceneController {
     @FXML
     public void switchToScene1(ActionEvent event) throws IOException {
         Parent root = FXMLLoader.load(getClass().getResource("Scene1.fxml"));
-        stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+        stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         scene = new Scene(root);
         stage.setScene(scene);
         stage.show();
@@ -178,7 +141,7 @@ public class SceneController {
     @FXML
     public void switchToScene2(ActionEvent event) throws IOException {
         Parent root = FXMLLoader.load(getClass().getResource("Scene2.fxml"));
-        stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+        stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         scene = new Scene(root);
         stage.setScene(scene);
         stage.show();
@@ -187,10 +150,114 @@ public class SceneController {
     @FXML
     public void switchToPatientList(ActionEvent event) throws IOException {
         Parent root = FXMLLoader.load(getClass().getResource("PatientsList.fxml"));
-        stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+        stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         scene = new Scene(root);
         stage.setScene(scene);
         stage.show();
+    }
+
+    @FXML
+    public void switchToEditScene(ActionEvent event) throws IOException {
+        Proband selected = patientsTable.getSelectionModel().getSelectedItem();
+        if (selected == null) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("No selection");
+            alert.setHeaderText("No patient selected");
+            alert.setContentText("Please select a patient to edit.");
+            alert.showAndWait();
+            return;
+        }
+
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("EditScene.fxml"));
+        Parent root = loader.load();
+
+        SceneController editController = loader.getController();
+        editController.prepareEditScene(selected); // populate fields on the loaded controller
+
+        stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        scene = new Scene(root);
+        stage.setScene(scene);
+        stage.show();
+    }
+
+    @FXML
+    private TextField heightFieldE;
+
+    @FXML
+    private TextField weightFieldE;
+
+    @FXML
+    private RadioButton maleRadioE;
+
+    @FXML
+    private RadioButton femaleRadioE;
+
+    @FXML
+    private TextField nameFieldE;
+
+    @FXML
+    private TextField surnameFieldE;
+
+    @FXML
+    private DatePicker birthDatePickerE;
+
+    @FXML
+    private TextField commentFieldE;
+
+    @FXML
+    private DatePicker measureDateE;
+
+    private Proband currentProband;
+
+    public void prepareEditScene(Proband proband) {
+        currentProband = proband;
+
+        if (nameFieldE != null) nameFieldE.setText(proband.getName());
+        if (surnameFieldE != null) surnameFieldE.setText(proband.getSurname());
+        if (birthDatePickerE != null) birthDatePickerE.setValue(proband.getBirthDate());
+        if (heightFieldE != null) heightFieldE.setText(String.valueOf(proband.getHeight()));
+        if (weightFieldE != null) weightFieldE.setText(String.valueOf(proband.getWeight()));
+        if (commentFieldE != null) commentFieldE.setText(proband.getComment());
+        if (maleRadioE != null && femaleRadioE != null) {
+            if (proband.isMale()) {
+                maleRadioE.setSelected(true);
+                femaleRadioE.setSelected(false);
+            } else {
+                maleRadioE.setSelected(false);
+                femaleRadioE.setSelected(true);
+            }
+        }
+        measureDateE.setValue(LocalDate.now());
+    }
+
+    public void editSelectedProband(ActionEvent event) {
+        Proband toSave = currentProband;
+        toSave.setName(nameFieldE.getText());
+        toSave.setSurname(surnameFieldE.getText());
+        toSave.setBirthDate(birthDatePickerE.getValue());
+        toSave.setHeight(Double.parseDouble(heightFieldE.getText()));
+        toSave.setWeight(Double.parseDouble(weightFieldE.getText()));
+        toSave.setComment(commentFieldE.getText());
+        toSave.setMale(maleRadioE.isSelected());
+        toSave.setMeasurementDate(measureDateE.getValue());
+
+        try {
+            probandDAO.update(toSave);
+        } catch (IllegalStateException e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Chyba Souběžnosti");
+            alert.setHeaderText("Záznam byl upraven jiným uživatelem.");
+            alert.setContentText("Znovu načtěte seznam probandů a zkuste to znovu.");
+            alert.showAndWait();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
+            switchToPatientList(event);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @FXML
@@ -210,8 +277,6 @@ public class SceneController {
 
     @FXML
     public void initialize() {
-        connectToDatabase();
-
         if (patientsTable != null) {
             nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
             surnameColumn.setCellValueFactory(new PropertyValueFactory<>("surname"));
@@ -224,14 +289,8 @@ public class SceneController {
 
     private void loadPatients() {
         try {
-            ProbandH2 probandH2 = new ProbandH2(DB_PATH, DB_USER, ENCRYPTION_KEY);
-            ProbandService probandService = new ProbandService(probandH2);
-
-            List<Proband> list = probandService.getAllProbands();
+            List<Proband> list = probandDAO.findAll();
             patientsTable.setItems(FXCollections.observableArrayList(list));
-
-            probandService.close();
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -266,43 +325,6 @@ public class SceneController {
 
         } catch (Exception e) {
             e.printStackTrace();
-        }
-    }
-
-    private void showDatabaseErrorDialog(String errorMessage) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Chyba databáze");
-        alert.setHeaderText("Nelze se připojit k databázi");
-        alert.setContentText(errorMessage + "\n\nCo chcete udělat?");
-
-        ButtonType refreshButton = new ButtonType("Obnovit");
-        ButtonType quitButton = new ButtonType("Ukončit aplikaci");
-
-        alert.getButtonTypes().setAll(refreshButton, quitButton);
-
-        Optional<ButtonType> result = alert.showAndWait();
-
-        if (result.isPresent()) {
-            if (result.get() == refreshButton) {
-                DatabaseManager.resetInstance();
-
-                try {
-                    DatabaseManager dbManager = DatabaseManager.getInstance();
-                    probandService = dbManager.getProbandService();
-
-                    Alert successAlert = new Alert(Alert.AlertType.INFORMATION);
-                    successAlert.setTitle("Úspěch");
-                    successAlert.setHeaderText("Připojení obnoveno");
-                    successAlert.setContentText("Databáze je nyní připojena.");
-                    successAlert.showAndWait();
-
-                } catch (IOException e) {
-                    System.err.println("Reconnection failed: " + e.getMessage());
-                    showDatabaseErrorDialog(e.getMessage());
-                }
-            } else if (result.get() == quitButton) {
-                Platform.exit();
-            }
         }
     }
 }
