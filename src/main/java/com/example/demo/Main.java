@@ -1,6 +1,6 @@
 package com.example.demo;
 
-import com.example.demo.model.HibernateUtil;
+import com.example.demo.util.HibernateUtil;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;

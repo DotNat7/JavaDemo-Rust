@@ -1,4 +1,4 @@
-package com.example.demo;
+package com.example.demo.controller;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -15,6 +15,10 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 public class GraphController {
+    private Stage stage;
+    private Scene scene;
+    private Parent root;
+
     @FXML
     private LineChart<Number, Number> bmiChart;
 
@@ -90,7 +94,6 @@ public class GraphController {
 
         XYChart.Data<Number, Number> dataPoint = new XYChart.Data<>(age, bmi);
 
-        // vytvoříme větší kruh jako symbol
         javafx.scene.shape.Circle circle = new javafx.scene.shape.Circle(6);
         circle.setStyle("-fx-fill: red; -fx-stroke: black; -fx-stroke-width: 1;");
         dataPoint.setNode(circle);
@@ -101,9 +104,27 @@ public class GraphController {
 
     @FXML
     public void switchToScene1(ActionEvent event) throws IOException {
-        Parent root = FXMLLoader.load(getClass().getResource("Scene1.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("/com/example/demo/Scene1.fxml"));
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         Scene scene = new Scene(root);
+        stage.setScene(scene);
+        stage.show();
+    }
+
+    @FXML
+    public void switchToScene2(ActionEvent event) throws IOException {
+        Parent root = FXMLLoader.load(getClass().getResource("/com/example/demo/Scene2.fxml"));
+        stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        scene = new Scene(root);
+        stage.setScene(scene);
+        stage.show();
+    }
+
+    @FXML
+    public void switchToPatientList(ActionEvent event) throws IOException {
+        Parent root = FXMLLoader.load(getClass().getResource("/com/example/demo/ProbandList.fxml"));;
+        stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        scene = new Scene(root);
         stage.setScene(scene);
         stage.show();
     }

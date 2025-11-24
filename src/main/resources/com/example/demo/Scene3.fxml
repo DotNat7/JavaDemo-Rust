@@ -6,7 +6,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane prefHeight="456.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.demo.GraphController">
+<AnchorPane prefHeight="456.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.demo.controller.GraphController">
     <LineChart fx:id="bmiChart" layoutY="43.0" prefHeight="400.0" prefWidth="582.0" title="BMI graf">
         <xAxis>
             <NumberAxis autoRanging="false" label="Věk" lowerBound="0" side="BOTTOM" tickUnit="1" upperBound="18" />

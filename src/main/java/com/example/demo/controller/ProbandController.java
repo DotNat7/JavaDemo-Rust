@@ -1,7 +1,7 @@
-package com.example.demo;
+package com.example.demo.controller;
 
 import com.example.demo.model.Proband;
-import com.example.demo.model.ProbandDAO;
+import com.example.demo.repository.ProbandDAO;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -18,10 +18,13 @@ import java.time.LocalDate;
 import java.time.Period;
 import java.util.List;
 
-public class SceneController {
+public class ProbandController {
     private Stage stage;
     private Scene scene;
     private Parent root;
+
+    @FXML
+    private TableView<Proband> patientsTable;
 
     @FXML
     private TextField heightField;
@@ -108,7 +111,7 @@ public class SceneController {
         double bmi = weightValue / Math.pow(heightValue / 100, 2);
 
         // vytvoření loaderu
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("Scene3.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/demo/Scene3.fxml"));
         Parent root = loader.load();
         GraphController controller = loader.getController();
         controller.addPatientPoint(age, bmi, name);
@@ -131,49 +134,7 @@ public class SceneController {
 
     @FXML
     public void switchToScene1(ActionEvent event) throws IOException {
-        Parent root = FXMLLoader.load(getClass().getResource("Scene1.fxml"));
-        stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        scene = new Scene(root);
-        stage.setScene(scene);
-        stage.show();
-    }
-
-    @FXML
-    public void switchToScene2(ActionEvent event) throws IOException {
-        Parent root = FXMLLoader.load(getClass().getResource("Scene2.fxml"));
-        stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        scene = new Scene(root);
-        stage.setScene(scene);
-        stage.show();
-    }
-
-    @FXML
-    public void switchToPatientList(ActionEvent event) throws IOException {
-        Parent root = FXMLLoader.load(getClass().getResource("PatientsList.fxml"));
-        stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        scene = new Scene(root);
-        stage.setScene(scene);
-        stage.show();
-    }
-
-    @FXML
-    public void switchToEditScene(ActionEvent event) throws IOException {
-        Proband selected = patientsTable.getSelectionModel().getSelectedItem();
-        if (selected == null) {
-            Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setTitle("No selection");
-            alert.setHeaderText("No patient selected");
-            alert.setContentText("Please select a patient to edit.");
-            alert.showAndWait();
-            return;
-        }
-
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("EditScene.fxml"));
-        Parent root = loader.load();
-
-        SceneController editController = loader.getController();
-        editController.prepareEditScene(selected); // populate fields on the loaded controller
-
+        Parent root = FXMLLoader.load(getClass().getResource("/com/example/demo/Scene1.fxml"));
         stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         scene = new Scene(root);
         stage.setScene(scene);
@@ -261,7 +222,13 @@ public class SceneController {
     }
 
     @FXML
-    private TableView<Proband> patientsTable;
+    public void switchToPatientList(ActionEvent event) throws IOException {
+        Parent root = FXMLLoader.load(getClass().getResource("/com/example/demo/PatientsList.fxml"));
+        stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        scene = new Scene(root);
+        stage.setScene(scene);
+        stage.show();
+    }
 
     @FXML
     private TableColumn<Proband, String> nameColumn;
@@ -297,6 +264,30 @@ public class SceneController {
     }
 
     @FXML
+    public void switchToEditScene(ActionEvent event) throws IOException {
+        Proband selected = patientsTable.getSelectionModel().getSelectedItem();
+        if (selected == null) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("No selection");
+            alert.setHeaderText("No patient selected");
+            alert.setContentText("Please select a patient to edit.");
+            alert.showAndWait();
+            return;
+        }
+
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/demo/EditScene.fxml"));
+        Parent root = loader.load();
+
+        ProbandController editController = loader.getController();
+        editController.prepareEditScene(selected); // populate fields on the loaded controller
+
+        stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        scene = new Scene(root);
+        stage.setScene(scene);
+        stage.show();
+    }
+
+    @FXML
     private void showGraphForSelected(ActionEvent event) {
         Proband selected = patientsTable.getSelectionModel().getSelectedItem();
 
@@ -306,7 +297,7 @@ public class SceneController {
         }
 
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("Scene3.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/demo/Scene3.fxml"));
             Parent root = loader.load();
 
             GraphController controller = loader.getController();

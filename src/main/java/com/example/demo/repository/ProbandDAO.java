@@ -1,5 +1,7 @@
-package com.example.demo.model;
+package com.example.demo.repository;
 
+import com.example.demo.model.Proband;
+import com.example.demo.util.HibernateUtil;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
